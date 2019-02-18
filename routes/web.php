@@ -26,3 +26,6 @@ Route::post('/tasks', function () {
     event(
         (new \App\Events\TaskCreated($task))->dontBroadcastToCurrentUser());
 });
+Route::get('/redis', function () {
+    return view('redis');
+});
