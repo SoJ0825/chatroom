@@ -29,3 +29,7 @@ Route::post('/tasks', function () {
 Route::get('/redis', function () {
     return view('redis');
 });
+
+Route::get('/chatroom', function () {
+    return view('chatRoom');
+});
