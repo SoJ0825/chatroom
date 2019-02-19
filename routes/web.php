@@ -11,13 +11,14 @@
 |
 */
 use App\Task;
+use App\Message;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
 Route::get('/tasks', function () {
-    return Task::latest()->pluck('body');
+    return Task::all()->pluck('body');
 });
 
 Route::post('/tasks', function () {
@@ -32,4 +33,18 @@ Route::get('/redis', function () {
 
 Route::get('/chatroom', function () {
     return view('chatRoom');
+});
+
+Route::get('/messages', function () {
+    return Message::all();
+});
+
+Route::post('/messages', function () {
+    $message = Message::forceCreate(request(['body','user_id']));
+    event(
+        (new \App\Events\MessageCreated($message))->dontBroadcastToCurrentUser());
+//        $task = 'hi';
+//
+//    event(
+//        (new \App\Events\TaskCreated($task))->dontBroadcastToCurrentUser());
 });
