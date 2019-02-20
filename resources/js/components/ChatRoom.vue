@@ -16,6 +16,7 @@
                                                        alt="sunil"></div>
                     <div class="received_msg">
                         <div class="received_withd_msg">
+                            <span class="time_date">{{detail.user.name}}</span>
                             <p>{{detail.body}}</p>
                             <span class="time_date">{{detail.updated_at}}</span></div>
                     </div>
@@ -25,8 +26,8 @@
 
             <div class="type_msg">
                 <div class="input_msg_write">
-                    <input type="text" class="write_msg" placeholder="Type a message" v-model="newMessage" >
-                    <button class="msg_send_btn" type="button" v-on:click="addMessage">
+                    <input type="text" class="write_msg" placeholder="Type a message" v-on:keyup.enter="addMessage" v-model="newMessage" >
+                    <button class="msg_send_btn" type="button"  v-on:click="addMessage">
                         <i class="fa fa-paper-plane-o" aria-hidden="true"></i>
                     </button>
                 </div>
@@ -44,7 +45,8 @@
     export default {
         data() {
             return {
-                userID: 1,
+                userID: 0,
+                userName: '',
                 data: [],
                 newMessage: '',
             };
@@ -52,20 +54,37 @@
 
         created() {
             axios.get('/messages').then(response => (this.data = response.data));
+
             window.Echo.channel('messages').listen('MessageCreated', ({detail}) => {
                 this.data.push(detail);
             });
+
+            const urlParams = new URLSearchParams(window.location.search);
+            this.userName = urlParams.get('user');
+
+            axios.get('/getuserid', {
+                params: {
+                    user: this.userName
+                }
+            }).then(response => (this.userID = response.data));
         },
 
         updated() {
+            console.log(this.data);
             this.scrollToEnd();
         },
 
         methods: {
             addMessage() {
                 axios.post('/messages', {body: this.newMessage, user_id: this.userID});
-                this.data.push({"user_id": this.userID, "body": this.newMessage,
-                    "updated_at": this.getTime()});
+                this.data.push(
+                    {
+                        "user_id": this.userID,
+                        "body": this.newMessage,
+                        "updated_at": this.getTime(),
+                        "user":
+                            {"name": this.userName}
+                    });
                 this.newMessage = '';
             },
 
