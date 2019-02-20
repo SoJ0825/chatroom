@@ -1,8 +1,8 @@
 <template>
-    <div class="container">
+    <div id="container" class="container">
         <h3 class=" text-center">Messaging</h3>
         <div class="messaging">
-            <div class="msg_history">
+            <div id="msg_history" class="msg_history">
 
                 <div v-for="detail in data">
                 <div class="outgoing_msg" v-if="detail.user_id == userID">
@@ -23,10 +23,9 @@
                 </div>
             </div>
 
-
             <div class="type_msg">
                 <div class="input_msg_write">
-                    <input type="text" class="write_msg" placeholder="Type a message" v-model="newMessage"/>
+                    <input type="text" class="write_msg" placeholder="Type a message" v-model="newMessage" >
                     <button class="msg_send_btn" type="button" v-on:click="addMessage">
                         <i class="fa fa-paper-plane-o" aria-hidden="true"></i>
                     </button>
@@ -50,11 +49,16 @@
                 newMessage: '',
             };
         },
+
         created() {
             axios.get('/messages').then(response => (this.data = response.data));
             window.Echo.channel('messages').listen('MessageCreated', ({detail}) => {
                 this.data.push(detail);
             });
+        },
+
+        updated() {
+            this.scrollToEnd();
         },
 
         methods: {
@@ -82,6 +86,13 @@
                 var m = this.addZero(d.getMinutes());
                 var s = this.addZero(d.getSeconds());
                 return y + '-' + M + '-' + day + ' ' + h + ":" + m + ":" + s;
+            },
+
+            scrollToEnd() {
+                let msg_window = document.getElementById('msg_history');
+                if(msg_window != null) {
+                    msg_window.scrollTo(0, msg_window.scrollHeight);
+                }
             }
         }
     };
