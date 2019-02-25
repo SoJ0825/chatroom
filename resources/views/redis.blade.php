@@ -1,4 +1,3 @@
-<!doctype html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -26,13 +25,16 @@
             };
         },
         created() {
-            let socket = io('http://ac78b079.ngrok.io');
-// console.log('created');
-            socket.on('TaskCreated', function (data) {
-                // this.users.push(data.username);
-                console.log(data);
+            let socket = io('http://192.168.55.226:3000');
+            console.log('created');
+
+            socket.on('messages:testEvent', function (data) {
+                console.log('get socket');
+                this.users.push(data.username);
             }.bind(this));
         }
     });
 
 </script>
+</body>
+</html>

@@ -16,7 +16,8 @@ use App\Message;
 use Illuminate\Http\Request;
 
 Route::get('/', function () {
-    return view('welcome');
+//    return view('welcome');
+    return view('login');
 });
 
 Route::get('/tasks', function () {
@@ -31,6 +32,16 @@ Route::post('/tasks', function () {
 });
 
 Route::get('/redis', function () {
+
+    $data = [
+        'event' => 'testEvent',
+        'data' => [
+            'username' => 'SoJ',
+        ],
+    ];
+
+    Redis::publish('messages', json_encode($data));
+
     return view('redis');
 });
 
@@ -54,8 +65,11 @@ Route::get('/messages', function () {
 Route::post('/messages', function () {
     $message = Message::forceCreate(request(['body','user_id']));
     $message->user;
-    event(
-        (new \App\Events\MessageCreated($message))->dontBroadcastToCurrentUser());
+
+    $data = ['data' => $message, 'event' => 'messages'];
+
+    Redis::publish('chatRoom', json_encode($data));
+
 });
 
 Route::get('/getuserid', function (Request $request) {
