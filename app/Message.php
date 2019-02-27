@@ -11,4 +11,8 @@ class Message extends Model
     {
         return $this->belongsTo('App\User');
    }
+
+   protected $hidden = [
+       'created_at',
+   ];
 }
